@@ -1,0 +1,5 @@
+name: Gihub Actions test
+
+on:
+ push:
+  branches:
