@@ -1,116 +1,142 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { createBoard, getBoardById, updateBoard } from '../api/boardApi';
-import type { Board } from '../types/board';
-import { Save, X } from 'lucide-react';
+import { ArrowLeft, Send, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function BoardForm() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const isEditMode = !!id;
-  
-  const [formData, setFormData] = useState<Board>({
-    title: '',
-    content: '',
-    author: ''
-  });
-  const [loading, setLoading] = useState(isEditMode);
+  const isEdit = Boolean(id);
+
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [author, setAuthor] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (isEditMode) {
+    if (isEdit && id) {
       fetchBoard(Number(id));
     }
-  }, [id]);
+  }, [isEdit, id]);
 
   const fetchBoard = async (boardId: number) => {
     try {
       const data = await getBoardById(boardId);
-      setFormData(data);
+      setTitle(data.title);
+      setContent(data.content);
+      setAuthor(data.author);
     } catch (err) {
       alert('게시글을 불러오는데 실패했습니다.');
       navigate('/');
-    } finally {
-      setLoading(false);
     }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
     try {
-      if (isEditMode) {
-        await updateBoard(Number(id), formData);
-        navigate(`/board/${id}`);
+      if (isEdit && id) {
+        await updateBoard(Number(id), { title, content, author });
       } else {
-        await createBoard(formData);
-        navigate('/');
+        await createBoard({ title, content, author });
       }
+      navigate('/');
     } catch (err) {
       alert('저장에 실패했습니다.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (loading) return <div className="text-center py-10">로딩 중...</div>;
-
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-8 bg-white rounded-xl shadow-sm">
-      <h1 className="text-2xl font-bold text-slate-800 mb-6">{isEditMode ? '게시글 수정' : '새 게시글 작성'}</h1>
-      
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">제목</label>
-          <input
-            type="text"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-            placeholder="제목을 입력하세요"
-          />
+    <div className="max-w-4xl mx-auto mt-12 mb-20 px-4">
+      <Link 
+        to={isEdit ? `/board/${id}` : "/"} 
+        className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold mb-8 transition-colors group"
+      >
+        <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:bg-indigo-50 transition-colors">
+          <ArrowLeft size={18} />
         </div>
-        
-        {!isEditMode && (
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">작성자</label>
+        취소하고 돌아가기
+      </Link>
+
+      <div className="glass rounded-[2.5rem] shadow-2xl border border-white/60 overflow-hidden">
+        <header className="p-10 md:p-14 bg-white/40 border-b border-white/40">
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+            {isEdit ? '게시글 수정하기' : '새로운 이야기 작성'}
+          </h1>
+          <p className="text-slate-500 mt-2 text-lg">
+            {isEdit ? '수정하고 싶은 내용을 입력해 주세요.' : '멋진 소식을 커뮤니티에 공유해 보세요.'}
+          </p>
+        </header>
+
+        <form onSubmit={handleSubmit} className="p-10 md:p-14 space-y-8">
+          <div className="space-y-3">
+            <label htmlFor="author" className="block text-sm font-bold text-slate-500 uppercase tracking-widest ml-1">
+              작성자
+            </label>
             <input
               type="text"
-              name="author"
-              value={formData.author}
-              onChange={handleChange}
+              id="author"
+              value={author}
+              onChange={(e) => setAuthor(e.target.value)}
+              className="w-full px-6 py-4 bg-white/60 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-lg font-semibold text-slate-800 placeholder:text-slate-300"
+              placeholder="당신의 이름을 입력해 주세요"
               required
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-              placeholder="이름을 입력하세요"
+              disabled={isEdit}
             />
           </div>
-        )}
-        
-        <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">내용</label>
-          <textarea
-            name="content"
-            value={formData.content}
-            onChange={handleChange}
-            required
-            rows={10}
-            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
-            placeholder="내용을 입력하세요"
-          />
-        </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-          <Link to={isEditMode ? `/board/${id}` : '/'} className="flex items-center gap-2 px-6 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors font-medium">
-            <X size={18} /> 취소
-          </Link>
-          <button type="submit" className="flex items-center gap-2 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors font-medium shadow-sm">
-            <Save size={18} /> {isEditMode ? '수정하기' : '등록하기'}
-          </button>
-        </div>
-      </form>
+          <div className="space-y-3">
+            <label htmlFor="title" className="block text-sm font-bold text-slate-500 uppercase tracking-widest ml-1">
+              제목
+            </label>
+            <input
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full px-6 py-4 bg-white/60 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-xl font-bold text-slate-800 placeholder:text-slate-300"
+              placeholder="전달하고 싶은 핵심 제목을 적어주세요"
+              required
+            />
+          </div>
+
+          <div className="space-y-3">
+            <label htmlFor="content" className="block text-sm font-bold text-slate-500 uppercase tracking-widest ml-1">
+              내용
+            </label>
+            <textarea
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full px-6 py-4 bg-white/60 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 outline-none transition-all text-lg min-h-[350px] text-slate-700 placeholder:text-slate-300 resize-none leading-relaxed"
+              placeholder="공유하고 싶은 상세한 내용을 자유롭게 작성해 보세요..."
+              required
+            />
+          </div>
+
+          <div className="pt-6 flex justify-end">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white px-10 py-5 rounded-2xl font-bold text-xl shadow-xl shadow-indigo-100 transition-all hover:-translate-y-1 active:scale-95"
+            >
+              {isSubmitting ? (
+                <div className="w-6 h-6 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
+              ) : (
+                <>
+                  {isEdit ? <CheckCircle size={24} /> : <Send size={24} />}
+                  {isEdit ? '수정 완료' : '게시하기'}
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
