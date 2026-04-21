@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getBoardById, deleteBoard } from '../api/boardApi';
 import type { Board } from '../types/board';
-import { ArrowLeft, Edit, Trash2, Calendar, User } from 'lucide-react';
+import { ChevronLeft, MoreHorizontal } from 'lucide-react';
 
 export default function BoardDetail() {
   const { id } = useParams<{ id: string }>();
@@ -10,6 +10,7 @@ export default function BoardDetail() {
   const [board, setBoard] = useState<Board | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -29,7 +30,7 @@ export default function BoardDetail() {
   };
 
   const handleDelete = async () => {
-    if (window.confirm('정말로 삭제하시겠습니까?')) {
+    if (window.confirm('정말로 이 글을 삭제할까요?')) {
       try {
         await deleteBoard(Number(id));
         navigate('/');
@@ -40,83 +41,84 @@ export default function BoardDetail() {
   };
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-      <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-      <p className="text-slate-500 font-medium">게시글을 불러오는 중...</p>
+    <div className="flex flex-col items-center justify-center min-h-[80vh]">
+      <div className="w-8 h-8 border-3 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
     </div>
   );
 
   if (error || !board) return (
-    <div className="max-w-md mx-auto mt-20 p-8 glass rounded-3xl text-center shadow-xl">
-      <div className="text-red-500 text-5xl mb-4">⚠️</div>
-      <h2 className="text-2xl font-bold text-slate-800 mb-2">게시글이 없습니다</h2>
-      <p className="text-slate-600 mb-6">{error || '요청하신 게시글을 찾을 수 없습니다.'}</p>
-      <Link to="/" className="inline-block bg-slate-800 text-white px-6 py-2 rounded-xl hover:bg-slate-900 transition-colors">
-        목록으로 돌아가기
-      </Link>
+    <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded-[32px] text-center">
+      <p className="text-[#f04452] font-semibold mb-2">글을 찾을 수 없어요</p>
+      <Link to="/" className="text-[#3182f6] font-bold mt-4 inline-block">목록으로 돌아가기</Link>
     </div>
   );
 
   return (
-    <div className="max-w-4xl mx-auto mt-12 mb-20 px-4">
-      <Link 
-        to="/" 
-        className="inline-flex items-center gap-2 text-slate-500 hover:text-indigo-600 font-bold mb-8 transition-colors group"
-      >
-        <div className="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center group-hover:bg-indigo-50 transition-colors">
-          <ArrowLeft size={18} />
+    <div className="max-w-[700px] mx-auto px-5 py-8">
+      {/* 상단 네비바 */}
+      <div className="flex justify-between items-center mb-10">
+        <button 
+          onClick={() => navigate('/')}
+          className="p-2 -ml-2 text-[#4e5968] hover:bg-[#e5e8eb] rounded-full transition-colors"
+        >
+          <ChevronLeft size={28} />
+        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowMenu(!showMenu)}
+            className="p-2 text-[#4e5968] hover:bg-[#e5e8eb] rounded-full transition-colors"
+          >
+            <MoreHorizontal size={24} />
+          </button>
+          {showMenu && (
+            <div className="absolute right-0 mt-2 w-32 bg-white rounded-2xl shadow-xl border border-[#f2f4f6] z-10 overflow-hidden">
+              <Link to={`/edit/${board.id}`} className="block px-5 py-3 text-sm font-bold text-[#4e5968] hover:bg-[#f9fafb]">수정하기</Link>
+              <button 
+                onClick={handleDelete}
+                className="w-full text-left px-5 py-3 text-sm font-bold text-[#f04452] hover:bg-[#fff0f0]"
+              >
+                삭제하기
+              </button>
+            </div>
+          )}
         </div>
-        목록으로 돌아가기
-      </Link>
+      </div>
 
-      <article className="glass rounded-[2.5rem] shadow-2xl border border-white/60 overflow-hidden">
-        <header className="p-10 md:p-14 bg-white/40 border-b border-white/40">
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-8">
+      <div className="bg-white rounded-[32px] p-8 md:p-12 shadow-sm">
+        <header className="mb-10">
+          <h1 className="text-[28px] md:text-[34px] font-bold text-[#191f28] leading-tight mb-6">
             {board.title}
           </h1>
-          
-          <div className="flex flex-wrap items-center gap-6 text-slate-500">
-            <div className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-2xl shadow-sm">
-              <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">
-                <User size={16} />
-              </div>
-              <span className="font-bold text-slate-700">{board.author}</span>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#f2f4f6] flex items-center justify-center text-[#8b95a1] font-bold">
+              {board.author[0]}
             </div>
-            
-            <div className="flex items-center gap-2 bg-white/60 px-4 py-2 rounded-2xl shadow-sm">
-              <Calendar size={18} className="text-slate-400" />
-              <span className="font-medium">
+            <div>
+              <p className="text-[16px] font-bold text-[#4e5968]">{board.author}</p>
+              <p className="text-[14px] text-[#8b95a1]">
                 {board.created_at && new Date(board.created_at).toLocaleDateString('ko-KR', {
                   year: 'numeric',
                   month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit'
+                  day: 'numeric'
                 })}
-              </span>
+              </p>
             </div>
           </div>
         </header>
         
-        <div className="p-10 md:p-14 text-slate-700 text-xl leading-relaxed whitespace-pre-wrap min-h-[300px]">
+        <div className="text-[18px] md:text-[20px] text-[#333d4b] leading-[1.6] whitespace-pre-wrap min-h-[300px]">
           {board.content}
         </div>
+      </div>
 
-        <footer className="p-10 md:p-14 bg-slate-50/30 flex justify-end gap-4 border-t border-white/40">
-          <Link 
-            to={`/edit/${board.id}`} 
-            className="flex items-center gap-2 px-8 py-4 bg-white hover:bg-indigo-50 text-slate-700 font-bold rounded-2xl shadow-sm border border-slate-100 transition-all hover:-translate-y-1"
-          >
-            <Edit size={20} className="text-indigo-500" /> 수정하기
-          </Link>
-          <button 
-            onClick={handleDelete} 
-            className="flex items-center gap-2 px-8 py-4 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-2xl shadow-sm border border-red-100 transition-all hover:-translate-y-1"
-          >
-            <Trash2 size={20} /> 삭제하기
-          </button>
-        </footer>
-      </article>
+      <div className="mt-10 flex justify-center">
+        <button 
+          onClick={() => navigate('/')}
+          className="bg-[#f2f4f6] text-[#4e5968] px-10 py-4 rounded-2xl font-bold transition-all active:scale-95"
+        >
+          목록으로 돌아가기
+        </button>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getBoards } from '../api/boardApi';
 import type { Board } from '../types/board';
-import { PlusCircle } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 export default function BoardList() {
   const [boards, setBoards] = useState<Board[]>([]);
@@ -25,91 +25,71 @@ export default function BoardList() {
   };
 
   if (loading) return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-      <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-      <p className="text-slate-500 font-medium">소중한 글들을 불러오는 중...</p>
+    <div className="flex flex-col items-center justify-center min-h-[80vh]">
+      <div className="w-8 h-8 border-3 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
     </div>
   );
   
   if (error) return (
-    <div className="max-w-md mx-auto mt-20 p-8 glass rounded-3xl text-center shadow-xl border-red-100">
-      <div className="text-red-500 text-5xl mb-4">⚠️</div>
-      <h2 className="text-2xl font-bold text-slate-800 mb-2">오류가 발생했습니다</h2>
-      <p className="text-slate-600 mb-6">{error}</p>
-      <button onClick={fetchBoards} className="bg-slate-800 text-white px-6 py-2 rounded-xl hover:bg-slate-900 transition-colors">
+    <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded-[32px] text-center">
+      <p className="text-[#f04452] font-semibold mb-2">오류가 발생했어요</p>
+      <p className="text-[#4e5968] mb-6">{error}</p>
+      <button onClick={fetchBoards} className="bg-[#3182f6] text-white px-6 py-3 rounded-2xl font-bold">
         다시 시도하기
       </button>
     </div>
   );
 
   return (
-    <div className="max-w-5xl mx-auto mt-12 mb-20 px-4">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-        <div>
-          <h1 className="text-5xl font-black text-slate-900 tracking-tight mb-3">커뮤니티</h1>
-          <p className="text-slate-500 text-lg">생각을 나누고 함께 성장하는 공간입니다.</p>
-        </div>
+    <div className="max-w-[700px] mx-auto px-5 py-12">
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-[26px] font-bold text-[#191f28]">게시판</h1>
         <Link 
           to="/write" 
-          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-4 rounded-2xl font-bold shadow-xl shadow-indigo-100 transition-all hover:-translate-y-1 active:scale-95"
+          className="flex items-center gap-1 bg-[#3182f6] text-white px-5 py-2.5 rounded-xl font-bold transition-all active:scale-95"
         >
-          <PlusCircle size={22} /> 새 글 작성
+          <Plus size={20} strokeWidth={3} /> 글쓰기
         </Link>
       </div>
       
-      <div className="glass rounded-[2rem] overflow-hidden shadow-2xl border border-white/50 overflow-x-auto">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-slate-50/80 border-b border-slate-200/50">
-              <th className="p-6 font-bold text-slate-400 text-xs uppercase tracking-[0.2em]">No.</th>
-              <th className="p-6 font-bold text-slate-800 text-sm uppercase tracking-wider">제목</th>
-              <th className="p-6 font-bold text-slate-800 text-sm uppercase tracking-wider text-center">작성자</th>
-              <th className="p-6 font-bold text-slate-800 text-sm uppercase tracking-wider text-right">작성일</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-100/50">
-            {boards.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="p-24 text-center text-slate-400">
-                  <div className="flex flex-col items-center gap-4">
-                    <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center border border-slate-100">
-                      <PlusCircle size={32} className="text-slate-300" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xl font-bold text-slate-800">아직 게시글이 없습니다</p>
-                      <p className="text-slate-400">첫 번째 이야기를 들려주세요!</p>
-                    </div>
-                    <Link to="/write" className="mt-4 text-indigo-600 font-bold hover:underline">글 쓰러 가기 &rarr;</Link>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              boards.map((board) => (
-                <tr key={board.id} className="hover:bg-indigo-50/40 transition-all group">
-                  <td className="p-6 text-slate-300 font-mono text-sm">{board.id}</td>
-                  <td className="p-6">
-                    <Link to={`/board/${board.id}`} className="text-slate-800 group-hover:text-indigo-600 font-bold text-xl transition-colors block">
-                      {board.title}
-                    </Link>
-                  </td>
-                  <td className="p-6 text-center">
-                    <span className="inline-flex items-center px-4 py-1.5 rounded-xl bg-slate-100/80 text-slate-600 text-sm font-semibold group-hover:bg-indigo-100 group-hover:text-indigo-700 transition-colors">
-                      {board.author}
+      <div className="bg-white rounded-[32px] overflow-hidden shadow-sm">
+        {boards.length === 0 ? (
+          <div className="py-20 text-center">
+            <p className="text-[#8b95a1] text-lg">아직 게시글이 없어요.</p>
+            <Link to="/write" className="text-[#3182f6] font-bold mt-2 inline-block">첫 글 쓰러 가기</Link>
+          </div>
+        ) : (
+          <div className="divide-y divide-[#f2f4f6]">
+            {boards.map((board) => (
+              <Link 
+                key={board.id} 
+                to={`/board/${board.id}`} 
+                className="block p-6 hover:bg-[#f9fafb] transition-colors group"
+              >
+                <div className="flex flex-col gap-1.5">
+                  <h2 className="text-[19px] font-bold text-[#191f28] group-hover:text-[#3182f6] transition-colors leading-snug">
+                    {board.title}
+                  </h2>
+                  <div className="flex items-center gap-3 text-[14px] text-[#8b95a1]">
+                    <span className="font-semibold text-[#4e5968]">{board.author}</span>
+                    <span className="w-1 h-1 bg-[#e5e8eb] rounded-full"></span>
+                    <span>
+                      {board.created_at ? new Date(board.created_at).toLocaleDateString('ko-KR', {
+                        month: 'short',
+                        day: 'numeric'
+                      }) : '-'}
                     </span>
-                  </td>
-                  <td className="p-6 text-right text-slate-400 text-sm font-medium">
-                    {board.created_at ? new Date(board.created_at).toLocaleDateString('ko-KR', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric'
-                    }) : '-'}
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
+      
+      <p className="text-center text-[#8b95a1] text-sm mt-10">
+        전체 {boards.length}개의 글이 있습니다.
+      </p>
     </div>
   );
 }
