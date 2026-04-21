@@ -66,7 +66,7 @@ export default function BoardForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="bg-white rounded-[32px] p-8 md:p-10 shadow-sm space-y-10">
+        <div className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-[#f2f4f6] space-y-10">
           {/* 작성자 입력 */}
           <div className="space-y-3">
             <label className="text-[14px] font-bold text-[#8b95a1] ml-1">작성자</label>
@@ -113,13 +113,13 @@ export default function BoardForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-[#3182f6] disabled:bg-[#d1d6db] text-white py-5 rounded-[20px] text-[18px] font-bold shadow-lg shadow-blue-100 transition-all active:scale-[0.98]"
+            className="w-full bg-[#3182f6] disabled:bg-[#d1d6db] text-white py-5 rounded-xl text-[18px] font-bold shadow-lg shadow-blue-50 transition-all active:scale-[0.98]"
           >
             {isSubmitting ? '저장 중...' : (isEdit ? '수정 완료' : '등록하기')}
           </button>
           <Link 
             to="/" 
-            className="w-full bg-transparent text-[#8b95a1] py-4 rounded-[20px] text-[16px] font-bold text-center"
+            className="w-full bg-transparent text-[#8b95a1] py-4 rounded-xl text-[16px] font-bold text-center"
           >
             취소하기
           </Link>

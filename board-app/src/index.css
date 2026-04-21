@@ -19,10 +19,10 @@ body {
   min-height: 100vh;
 }
 
-/* 토스 스타일 카드 */
+/* 토스 스타일 카드 - 곡률 조정 (32px -> 16px) */
 .toss-card {
   background-color: #ffffff;
-  border-radius: 24px;
+  border-radius: 16px;
   padding: 24px;
   box-shadow: none;
   transition: background-color 0.2s ease;
@@ -32,11 +32,11 @@ body {
   background-color: #f9fafb;
 }
 
-/* 버튼 기본 스타일 */
+/* 버튼 기본 스타일 - 곡률 조정 (12px 유지 또는 소폭 조정) */
 .toss-button-primary {
   background-color: #3182f6;
   color: #ffffff;
-  border-radius: 12px;
+  border-radius: 10px;
   font-weight: 600;
   transition: all 0.2s ease;
 }
@@ -48,7 +48,7 @@ body {
 .toss-button-secondary {
   background-color: #f2f4f6;
   color: #4e5968;
-  border-radius: 12px;
+  border-radius: 10px;
   font-weight: 600;
 }
 

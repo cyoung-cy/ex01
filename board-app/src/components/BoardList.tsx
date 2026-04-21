@@ -31,10 +31,10 @@ export default function BoardList() {
   );
   
   if (error) return (
-    <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded-[32px] text-center">
+    <div className="max-w-md mx-auto mt-20 p-8 bg-white rounded-2xl text-center shadow-sm">
       <p className="text-[#f04452] font-semibold mb-2">오류가 발생했어요</p>
       <p className="text-[#4e5968] mb-6">{error}</p>
-      <button onClick={fetchBoards} className="bg-[#3182f6] text-white px-6 py-3 rounded-2xl font-bold">
+      <button onClick={fetchBoards} className="bg-[#3182f6] text-white px-6 py-3 rounded-xl font-bold">
         다시 시도하기
       </button>
     </div>
@@ -52,7 +52,7 @@ export default function BoardList() {
         </Link>
       </div>
       
-      <div className="bg-white rounded-[32px] overflow-hidden shadow-sm">
+      <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-[#f2f4f6]">
         {boards.length === 0 ? (
           <div className="py-20 text-center">
             <p className="text-[#8b95a1] text-lg">아직 게시글이 없어요.</p>
