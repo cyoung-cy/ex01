@@ -10,12 +10,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-            # 1. 프론트엔드 빌드 (VITE_API_URL 주입)
+      # 1. 프론트엔드 빌드
       - name: Build Frontend
         working-directory: ./board-app
         run: |
           npm install
-          # Nginx 프록시를 사용하므로 상대 경로 /api/boards를 사용하거나 EC2 IP를 입력합니다.
+          # 반드시 /api/boards (상대 경로)로 설정하세요!
           VITE_API_URL=/api/boards npm run build
 
       # 2. EC2로 파일 전송 (생략 - 기존과 동일)
