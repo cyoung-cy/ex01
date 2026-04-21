@@ -17,8 +17,16 @@ jobs:
           npm install
           VITE_API_URL=/api/boards npm run build
 
-      # 2. EC2로 파일 전송 (생략 - 기존과 동일)
-      
+      # 2. EC2로 파일 전송
+      - name: Deploy to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "board-app/dist/*,board-backend/*"
+          target: ${{ secrets.EC2_TARGET_DIR }}
+
       # 3. 서버에서 환경 변수 설정 및 실행
       - name: Executing remote ssh commands
         uses: appleboy/ssh-action@master
