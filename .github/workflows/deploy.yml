@@ -10,24 +10,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 1. 프론트엔드 빌드
+            # 1. 프론트엔드 빌드 (VITE_API_URL 주입)
       - name: Build Frontend
         working-directory: ./board-app
         run: |
           npm install
-          npm run build
+          # Nginx 프록시를 사용하므로 상대 경로 /api/boards를 사용하거나 EC2 IP를 입력합니다.
+          VITE_API_URL=/api/boards npm run build
 
-      # 2. EC2로 파일 전송 (프론트엔드 dist + 백엔드 소스)
-      - name: Deploy to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "board-app/dist/*,board-backend/*"
-          target: ${{ secrets.EC2_TARGET_DIR }}
-
-      # 3. 서버에서 의존성 설치 및 백엔드 실행
+      # 2. EC2로 파일 전송 (생략 - 기존과 동일)
+      
+      # 3. 서버에서 환경 변수 설정 및 실행
       - name: Executing remote ssh commands
         uses: appleboy/ssh-action@master
         with:
@@ -36,7 +29,15 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd ${{ secrets.EC2_TARGET_DIR }}/board-backend
+            
+            # .env 파일 생성 (DB 정보)
+            echo "DB_HOST=localhost" > .env
+            echo "DB_PORT=3306" >> .env
+            echo "DB_USER=root" >> .env
+            echo "DB_PASSWORD=1234" >> .env
+            echo "DB_NAME=myDb" >> .env
+            echo "PORT=5000" >> .env
+            
             npm install
-            # PM2로 서버 시작/재시작
             pm2 delete board-api || true
             pm2 start src/server.js --name board-api
