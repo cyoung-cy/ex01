@@ -15,7 +15,6 @@ jobs:
         working-directory: ./board-app
         run: |
           npm install
-          # 반드시 /api/boards (상대 경로)로 설정하세요!
           VITE_API_URL=/api/boards npm run build
 
       # 2. EC2로 파일 전송 (생략 - 기존과 동일)
@@ -30,7 +29,6 @@ jobs:
           script: |
             cd ${{ secrets.EC2_TARGET_DIR }}/board-backend
             
-            # .env 파일 생성 (DB 정보)
             echo "DB_HOST=localhost" > .env
             echo "DB_PORT=3306" >> .env
             echo "DB_USER=root" >> .env
